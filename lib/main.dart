@@ -39,9 +39,8 @@ class MyHomePage extends StatelessWidget {
               ),
               Flexible(
                 child: FractionallySizedBox(
-                  alignment: Alignment.center,
                   widthFactor: 0.8,
-                  heightFactor: 0.3,
+                  heightFactor: 0.4,
                   child: Container(
                     constraints: BoxConstraints.expand(),
                     decoration: BoxDecoration(
@@ -49,7 +48,7 @@ class MyHomePage extends StatelessWidget {
                       borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
                     ),
                     child: Center(
-                      child: Text("Cards Against Programmers", style: TextStyle(color: Colors.white, fontSize: 28)),
+                      child: Text("Cards Against Programmers", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 28)),
                     )
                   ),
                 ),

@@ -29,18 +29,36 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text('Cards Against Programmers'),
-        ),
-      ),
       body: Center(
         child: Container(
-          padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+              ),
+              Flexible(
+                child: FractionallySizedBox(
+                  alignment: Alignment.center,
+                  widthFactor: 0.8,
+                  heightFactor: 0.3,
+                  child: Container(
+                    constraints: BoxConstraints.expand(),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+                    ),
+                    child: Center(
+                      child: Text("Cards Against Programmers", style: TextStyle(color: Colors.white, fontSize: 28)),
+                    )
+                  ),
+                ),
+              ),
+              Padding(
+                  padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
+              ),
               RaisedButton(
+                color: Colors.white,
                 onPressed: () {
                   Navigator.pushNamed(context, '/join');
                 },
@@ -56,6 +74,7 @@ class MyHomePage extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
               ),
               RaisedButton(
+                color: Colors.white,
                 onPressed: () {
                   Navigator.pushNamed(context, '/create');
                 },

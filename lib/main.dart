@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
         '/create' : (context) => CreateGame(),
       },
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        backgroundColor: Colors.white
       )
     );
   }
@@ -38,18 +41,18 @@ class MyHomePage extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
               ),
               Flexible(
+                fit: FlexFit.loose,
                 child: FractionallySizedBox(
                   alignment: Alignment.center,
                   widthFactor: 0.8,
                   heightFactor: 0.3,
                   child: Container(
-                    constraints: BoxConstraints.expand(),
                     decoration: BoxDecoration(
                       color: Colors.black,
-                      borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     ),
                     child: Center(
-                      child: Text("Cards Against Programmers", style: TextStyle(color: Colors.white, fontSize: 28)),
+                      child: Text("Cards Against Programmers", style: TextStyle(color: Colors.white, fontSize: 28), textAlign: TextAlign.center,),
                     )
                   ),
                 ),
@@ -95,11 +98,14 @@ class MyHomePage extends StatelessWidget {
 }
 
 class JoinGame extends StatelessWidget {
+  final codeController = TextEditingController();
+  final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Join a game'),
+        backgroundColor: Colors.black,
+        title: Text('Join a game', style: TextStyle(color: Colors.white),),
       ),
       body: Center(
         child: Container(
@@ -110,6 +116,7 @@ class JoinGame extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
               ),
               TextFormField(
+                controller: codeController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -121,6 +128,7 @@ class JoinGame extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
               ),
               TextFormField(
+                controller: nameController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -132,8 +140,11 @@ class JoinGame extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
               ),
               RaisedButton(
-                onPressed: () {},
-                child: Text('Join'),
+                color: Colors.black,
+                onPressed: () {
+                  joinGame(this.codeController.text, this.nameController.text);
+                  },
+                child: Text('Join', style: TextStyle(color: Colors.white),),
               )
             ],
           ),
@@ -141,23 +152,97 @@ class JoinGame extends StatelessWidget {
       ),
     );
   }
+
+  void joinGame(String code, String name) async {
+    var ws = await WebSocket.connect('ws://10.97.60.164:8080/game');
+
+    ws.addUtf8Text(utf8.encode(json.encode({'message': 'join_game', 'code': '$code', 'username': '$name'})));
+    ws.listen((msg) {
+      print(msg);
+    });
+  }
 }
 
 class CreateGame extends StatelessWidget {
+  final myController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hva hender her?'),
+        title: Text('Create game'),
       ),
       body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back'),
+        child: Container(
+          width: 250,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: myController,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(10),
+                  hintText: 'Your name',
+                ),
+              ),
+              SliderState(),
+              RaisedButton(
+                onPressed: () {
+                  createLobby(myController.text);
+                },
+                child: Text('Create game lobby'),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  },
+                child: Text('Go back'),
+              ),
+              Container(
+                height: 100,
+                width: 200,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: new BorderRadius.all(Radius.circular(5.0))),
+                  child: Text(
+                      'The Enchanted Nightingale __ blah blah',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, height: 2)
+                  ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void createLobby(String name) async  {
+    var ws = await WebSocket.connect('ws://10.97.60.164:8080/game');
+
+    ws.addUtf8Text(utf8.encode(json.encode({'message': 'create_game', 'username': '$name'})));
+  }
+}
+
+class SliderState extends StatefulWidget{
+  @override
+  createState()  => _SliderState();
+
+}
+
+class _SliderState extends State<SliderState>{
+  double _value = 0.0;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Slider(
+        value: this._value,
+         min: 0.0, max: 10.0,
+         onChanged: (double value) {setState(() => _value = value);},
+        ),
+        Text('${_value.toInt()}')
+      ],
     );
   }
 }

@@ -372,6 +372,11 @@ class _LobbyState extends State<Lobby> {
         _playerList.add(Player(name, 0));
         setState(() {});
       };
+      c.onJoinedGame = (users) {
+        _playerList.addAll(users);
+        this.code = c.code;
+        setState(() {});
+      };
       c.onLeft = (name) {
         Player removedPlayer;
         for(Player player in _playerList) {

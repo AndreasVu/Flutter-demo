@@ -56,7 +56,7 @@ class MyHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                     ),
                     child: Center(
-                      child: Text("Cards Against Programmers \n I want to ______ a",
+                      child: Text("Cards Against Programmers \n I want to ______ a game.",
                        style: TextStyle(color: Colors.white, fontSize: 28), textAlign: TextAlign.center,
                        ),
                     )

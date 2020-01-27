@@ -22,7 +22,8 @@ class Connection {
 
   Function(String) onJoin;
   Function(String) onLeft;
-  
+  Function() onGameCreated;
+
   Connection(this.socket, this.isHost, this.username, {this.code}) {
     assert(code == null && isHost);
     socket.listen(onData);
@@ -72,6 +73,8 @@ class Connection {
 
         code = json['code'];
         // TODO: Verify code.
+        print(code);
+        onGameCreated();
 
         state = ConnectionState.inLobby;
         break;

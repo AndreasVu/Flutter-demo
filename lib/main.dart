@@ -344,10 +344,13 @@ class Lobby extends StatefulWidget{
 
 class _LobbyState extends State<Lobby> {
   var _playerList = List<Player>();
+  String code;
+  Connection connection;
 
   _LobbyState(Future<Connection> connection) {
     _playerList.add(Player('skjer', 0));
     connection.then((c) {
+      this.connection = c;
       c.onJoin = (name) {
         _playerList.add(Player(name, 0));
         setState(() {});
@@ -363,28 +366,38 @@ class _LobbyState extends State<Lobby> {
         _playerList.remove(removedPlayer);
         setState(() {});
       };
+      c.onGameCreated = () {
+        this.code = c.code;
+        setState(() {});
+      };
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print(code);
     return Container(
       child: Expanded(
-        child: ListView.builder(
+        child: Column(
+          children: <Widget>[
+            code != null ? Text('ROOM CODE: ${connection.code}') : Text('Please wait'),
+            ListView.builder(
             shrinkWrap: true,
-        itemCount: _playerList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
+            itemCount: _playerList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               border: Border.all(width: 0.5, color: Colors.black)
-            ),
-            child: Text('${_playerList[index].name}', textAlign: TextAlign.center,),
-          );
-        },
-        )    
-      )  
+              ),
+              child: Text('${_playerList[index].name}', textAlign: TextAlign.center,),
+              );
+            },
+          )
+        ],
+      ),
+      )
     );
   }
 }

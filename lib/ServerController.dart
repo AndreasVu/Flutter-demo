@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
-const String SERVER_ADDRESS = "10.97.60.164";
+const String SERVER_ADDRESS = "192.168.10.186";
 const String SERVER_PATH = "/game";
 const int SERVER_PORT = 8080;
 
@@ -21,10 +21,10 @@ class Connection {
   bool isHost;
   bool inLobby;
 
-  Function(String) onJoin;
-  Function(String) onLeft;
-  Function() onGameCreated;
-  Function(List<String>) onJoinedGame;
+  void Function(String) onJoin;
+  void Function(String) onLeft;
+  void Function() onGameCreated;
+  void Function(List<String>) onJoinedGame;
 
   Connection(this.socket, this.isHost, this.username, {this.code}) {
     socket.listen(onData);

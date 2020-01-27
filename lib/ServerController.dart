@@ -6,14 +6,17 @@ const String SERVER_PATH = "/game";
 const int SERVER_PORT = 123;
 
 class Socket {
-    Future<WebSocket> socket;
+    WebSocket socket;
 
-    Socket(String address) {
-        socket = WebSocket.connect("ws://$SERVER_ADDRES:$SERVER_PORT$SERVER_PATH");
+    Socket._(this.socket);
+
+    static Future<Socket> connect(String address) async {
+        var socket = await WebSocket.connect("ws://$SERVER_ADDRES:$SERVER_PORT$SERVER_PATH");
+        return Socket._(socket);
     }
 
     void sendJson(Object obj) {
-        //socket.addUtf8Text(utf8.encode(json.encode(obj)));
+        socket.addUtf8Text(utf8.encode(json.encode(obj)));
     }
 }
 

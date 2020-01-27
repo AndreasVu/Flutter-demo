@@ -188,9 +188,9 @@ class JoinGame extends StatelessWidget {
                 ),
                 RaisedButton(
                   color: Colors.black,
-                  onPressed: () {
-                    joinGame(this.codeController.text, this.nameController.text.toUpperCase());
-                      Navigator.pushReplacementNamed(context, '/lobby');
+                  onPressed: () async {
+                      var connection = Connection.joinGame(nameController.text, codeController.text);
+                      Navigator.pushReplacementNamed(context, '/lobby', arguments: connection);
                     },
                   child: Text('Join', style: TextStyle(color: Colors.white),),
                 ),
@@ -208,15 +208,6 @@ class JoinGame extends StatelessWidget {
         ),
       )
     );
-  }
-
-  void joinGame(String code, String name) async {
-    var ws = await WebSocket.connect('ws://10.97.60.164:8080/game');
-
-    ws.addUtf8Text(utf8.encode(json.encode({'message': 'join_game', 'code': '$code', 'username': '$name'})));
-    ws.listen((msg) {
-      print(msg);
-    });
   }
 }
 
@@ -363,6 +354,7 @@ class _LobbyState extends State<Lobby> {
   var _playerList = List<Player>();
   String code;
   Connection connection;
+  bool joined = false;
 
   _LobbyState(Future<Connection> connection) {
     _playerList.add(Player('skjer', 0));
@@ -373,9 +365,12 @@ class _LobbyState extends State<Lobby> {
         setState(() {});
       };
       c.onJoinedGame = (users) {
-        _playerList.addAll(users);
+        for (String user in users) {
+          _playerList.add(Player(user, 0));
+        }
         this.code = c.code;
-        setState(() {});
+        print(joined);
+        setState(() {this.joined = true;});
       };
       c.onLeft = (name) {
         Player removedPlayer;
@@ -390,6 +385,7 @@ class _LobbyState extends State<Lobby> {
       };
       c.onGameCreated = () {
         this.code = c.code;
+        joined = true;
         setState(() {});
       };
     });
@@ -398,7 +394,7 @@ class _LobbyState extends State<Lobby> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: code != null 
+      child: joined
         ? Expanded(
           child: playerList(),
         )

@@ -19,6 +19,7 @@ class Connection {
   String username;
   String code;
   bool isHost;
+  bool inLobby;
 
   Function(String) onJoin;
   Function(String) onLeft;
@@ -26,7 +27,6 @@ class Connection {
   Function(List<String>) onJoinedGame;
 
   Connection(this.socket, this.isHost, this.username, {this.code}) {
-    assert(code == null && isHost);
     socket.listen(onData);
   }
 
@@ -75,10 +75,15 @@ class Connection {
 
         // json['users']
         if (onJoinedGame != null) {
-          onJoinedGame(json['users']);
+          List<String> users = [];
+          for(dynamic user in json['users']) {
+            users.add(user as String);
+          }
+          onJoinedGame(users);
         }
 
         state = ConnectionState.inLobby;
+        inLobby = true;
         break;
       case ConnectionState.creatingGame:
         if (json['message'] != 'created_game') {
@@ -90,6 +95,7 @@ class Connection {
         onGameCreated();
 
         state = ConnectionState.inLobby;
+        inLobby = true;
         break;
       case ConnectionState.inLobby:
         // Game starting
@@ -111,14 +117,17 @@ class Connection {
   }
 
   static Future<Connection> createGame(String username) async {
-        var socket = await WebSocket.connect("ws://$SERVER_ADDRESS:$SERVER_PORT$SERVER_PATH");
+    var socket = await WebSocket.connect("ws://$SERVER_ADDRESS:$SERVER_PORT$SERVER_PATH");
 
 
-        return Connection(socket, true, username);
+    return Connection(socket, true, username);
   }
 
-  static void joinGame(String address, int port) {
-    
+  static Future<Connection> joinGame(String username, String code) async {
+    var socket = await WebSocket.connect("ws://$SERVER_ADDRESS:$SERVER_PORT$SERVER_PATH");
+
+
+    return Connection(socket, false, username, code: code);
   }
 
 

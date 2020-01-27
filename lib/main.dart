@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'ServerController.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/join': (context) => JoinGame(),
         '/create' : (context) => CreateGame(),
         '/game' : (context) => GameScreen(),
+        '/lobby': (context) => LobbyScreen(),
       },
       theme: ThemeData(
         backgroundColor: Colors.white
@@ -168,7 +171,7 @@ class JoinGame extends StatelessWidget {
                   color: Colors.black,
                   onPressed: () {
                     joinGame(this.codeController.text, this.nameController.text);
-                    Navigator.pushReplacementNamed(context, '/game');
+                      Navigator.pushReplacementNamed(context, '/game');
                     },
                   child: Text('Join', style: TextStyle(color: Colors.white),),
                 ),
@@ -222,8 +225,9 @@ class CreateGame extends StatelessWidget {
               ),
               SliderState(),
               RaisedButton(
-                onPressed: () {
-                  createLobby(myController.text);
+                onPressed: () async {
+                  var connection = Connection.createGame(myController.text);
+                  Navigator.pushReplacementNamed(context, '/lobby', arguments: connection);
                 },
                 child: Text('Create game lobby'),
               ),
@@ -253,9 +257,7 @@ class CreateGame extends StatelessWidget {
   }
 
   void createLobby(String name) async  {
-    var ws = await WebSocket.connect('ws://10.97.60.164:8080/game');
-
-    ws.addUtf8Text(utf8.encode(json.encode({'message': 'create_game', 'username': '$name'})));
+    Connection connection = await Connection.createGame(name);
   }
 }
 
@@ -318,8 +320,12 @@ class LobbyScreen extends StatelessWidget{
       body: Center(
         child: Column(
           children: <Widget>[
-            Spacer(),
-            Lobby(),
+            Padding(padding: EdgeInsets.all(20),),
+            Text(
+              'Players',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            Lobby(ModalRoute.of(context).settings.arguments as Future<Connection>),
           ],
         ),
       ),
@@ -328,24 +334,57 @@ class LobbyScreen extends StatelessWidget{
 }
 
 class Lobby extends StatefulWidget{
+  final Future<Connection> connection;
+
+  Lobby(this.connection);
+
   @override
-  State<StatefulWidget> createState() {
-    
-  }
+  _LobbyState createState()  => _LobbyState(connection);
 }
 
-class LobbyState extends State<Lobby> {
+class _LobbyState extends State<Lobby> {
   var _playerList = List<Player>();
+
+  _LobbyState(Future<Connection> connection) {
+    _playerList.add(Player('skjer', 0));
+    connection.then((c) {
+      c.onJoin = (name) {
+        _playerList.add(Player(name, 0));
+        setState(() {});
+      };
+      c.onLeft = (name) {
+        Player removedPlayer;
+        for(Player player in _playerList) {
+          if (player.name == name) {
+            removedPlayer = player;
+            break;
+          }
+        }
+        _playerList.remove(removedPlayer);
+        setState(() {});
+      };
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      
+      child: Expanded(
+        child: ListView.builder(
+            shrinkWrap: true,
+        itemCount: _playerList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              border: Border.all(width: 0.5, color: Colors.black)
+            ),
+            child: Text('${_playerList[index].name}', textAlign: TextAlign.center,),
+          );
+        },
+        )    
+      )  
     );
   }
-}
-
-class Player {
-  String _playerName;
-  
-  Player(this._playerName);
 }

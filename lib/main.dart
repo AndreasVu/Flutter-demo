@@ -44,9 +44,8 @@ class MyHomePage extends StatelessWidget {
               Flexible(
                 fit: FlexFit.loose,
                 child: FractionallySizedBox(
-                  alignment: Alignment.center,
                   widthFactor: 0.8,
-                  heightFactor: 0.3,
+                  heightFactor: 0.4,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.black,

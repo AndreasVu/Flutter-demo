@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/join': (context) => JoinGame(),
         '/create' : (context) => CreateGame(),
+        '/game' : (context) => GameScreen(),
       },
       theme: ThemeData(
         backgroundColor: Colors.white
@@ -48,10 +49,12 @@ class MyHomePage extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.black,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
                     ),
                     child: Center(
-                      child: Text("Cards Against Programmers", style: TextStyle(color: Colors.white, fontSize: 28), textAlign: TextAlign.center,),
+                      child: Text("Cards Against Programmers \n I want to ______ a",
+                       style: TextStyle(color: Colors.white, fontSize: 28), textAlign: TextAlign.center,
+                       ),
                     )
                   ),
                 ),
@@ -59,34 +62,55 @@ class MyHomePage extends StatelessWidget {
               Padding(
                   padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
               ),
-              RaisedButton(
-                color: Colors.white,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/join');
-                },
+              InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                onTap: (() {
+                  Navigator.pushReplacementNamed(context, '/join');
+                }),
                 child: Container(
-                  width: 150,
-                  height: 90,
-                  child: Center(
-                    child: Text('Join game'),
-                  ),
-                ),
-              ),
+                  child: Ink(
+                    width: 160,
+                    height: 90,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, style: BorderStyle.solid, width: 0.5),
+                    borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Join',
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  )
+                )
+              )
+              ,
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
               ),
-              RaisedButton(
-                color: Colors.white,
-                onPressed: () {
+              InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                onTap: (() {
                   Navigator.pushNamed(context, '/create');
-                },
+                }),
                 child: Container(
-                  width: 150,
-                  height: 90,
-                  child: Center(
-                    child: Text('Create game'),
-                  ),
-                ),
+                  child: Ink(
+                    width: 160,
+                    height: 90,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, style: BorderStyle.solid, width: 0.5),
+                    borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Create',
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  )
+                )
               )
             ],
           ),
@@ -101,54 +125,66 @@ class JoinGame extends StatelessWidget {
   final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('Join a game', style: TextStyle(color: Colors.white),),
-      ),
-      body: Center(
-        child: Container(
-          width: 250,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              ),
-              TextFormField(
-                controller: codeController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(10),
-                  hintText: 'Room code',
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: Text('Join a game', style: TextStyle(color: Colors.white),),
+        ),
+        body: Center(
+          child: Container(
+            width: 250,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              ),
-              TextFormField(
-                controller: nameController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(10),
-                  hintText: 'Name',
+                TextFormField(
+                  controller: codeController,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.all(10),
+                    hintText: 'Room code',
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              ),
-              RaisedButton(
-                color: Colors.black,
-                onPressed: () {
-                  joinGame(this.codeController.text, this.nameController.text);
-                  },
-                child: Text('Join', style: TextStyle(color: Colors.white),),
-              )
-            ],
-          ),
-        )
-      ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                ),
+                TextFormField(
+                  controller: nameController,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.all(10),
+                    hintText: 'Name',
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                ),
+                RaisedButton(
+                  color: Colors.black,
+                  onPressed: () {
+                    joinGame(this.codeController.text, this.nameController.text);
+                    Navigator.pushReplacementNamed(context, '/game');
+                    },
+                  child: Text('Join', style: TextStyle(color: Colors.white),),
+                ),
+                RaisedButton(
+                  onPressed: () {Navigator.pushReplacementNamed(context, '/');},
+                  child: Center(
+                    child: Text(
+                      'Back to main menu'
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ),
+      )
     );
   }
 
@@ -237,11 +273,79 @@ class _SliderState extends State<SliderState>{
       children: <Widget>[
         Slider(
         value: this._value,
-         min: 0.0, max: 10.0,
-         onChanged: (double value) {setState(() => _value = value);},
+        min: 0.0, max: 10.0,
+        onChanged: (double value) {setState(() {
+          _value = value;
+        });}
         ),
         Text('${_value.toInt()}')
       ],
     );
   }
+}
+
+class GameScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+              ),
+              Text('Gamescreen'),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/');
+                },
+                child: Text('Return to main menu'),
+              )
+            ],
+          )
+        ),
+      ),
+    );
+  }
+}
+
+class LobbyScreen extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            Spacer(),
+            Lobby(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Lobby extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    
+  }
+}
+
+class LobbyState extends State<Lobby> {
+  var _playerList = List<Player>();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
+    );
+  }
+}
+
+class Player {
+  String _playerName;
+  
+  Player(this._playerName);
 }

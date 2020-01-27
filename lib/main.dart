@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 import 'ServerController.dart';
 
@@ -123,6 +124,14 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+class UppercaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(text: newValue.text.toUpperCase(), selection: newValue.selection);
+  }
+  
+}
+
 class JoinGame extends StatelessWidget {
   final codeController = TextEditingController();
   final nameController = TextEditingController();
@@ -145,6 +154,16 @@ class JoinGame extends StatelessWidget {
                 ),
                 TextFormField(
                   controller: codeController,
+                  maxLength: 4,
+                  maxLengthEnforced: true,
+                  enableSuggestions: false,
+                  textCapitalization: TextCapitalization.characters,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter(
+                        RegExp(r"[A-Za-z]*")
+                    ),
+                    UppercaseTextFormatter(),
+                  ],
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -170,7 +189,7 @@ class JoinGame extends StatelessWidget {
                 RaisedButton(
                   color: Colors.black,
                   onPressed: () {
-                    joinGame(this.codeController.text, this.nameController.text);
+                    joinGame(this.codeController.text, this.nameController.text.toUpperCase());
                       Navigator.pushReplacementNamed(context, '/game');
                     },
                   child: Text('Join', style: TextStyle(color: Colors.white),),

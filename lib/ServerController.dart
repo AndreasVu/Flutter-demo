@@ -73,7 +73,6 @@ class Connection {
 
         code = json['code'];
         // TODO: Verify code.
-        print(code);
         onGameCreated();
 
         state = ConnectionState.inLobby;

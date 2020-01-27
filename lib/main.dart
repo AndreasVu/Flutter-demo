@@ -171,7 +171,7 @@ class JoinGame extends StatelessWidget {
                   color: Colors.black,
                   onPressed: () {
                     joinGame(this.codeController.text, this.nameController.text);
-                      Navigator.pushReplacementNamed(context, '/game');
+                      Navigator.pushReplacementNamed(context, '/lobby');
                     },
                   child: Text('Join', style: TextStyle(color: Colors.white),),
                 ),
@@ -319,12 +319,10 @@ class LobbyScreen extends StatelessWidget{
     return Scaffold(
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(padding: EdgeInsets.all(20),),
-            Text(
-              'Players',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
             Lobby(ModalRoute.of(context).settings.arguments as Future<Connection>),
           ],
         ),
@@ -375,29 +373,41 @@ class _LobbyState extends State<Lobby> {
 
   @override
   Widget build(BuildContext context) {
-    print(code);
     return Container(
-      child: Expanded(
-        child: Column(
-          children: <Widget>[
-            code != null ? Text('ROOM CODE: ${connection.code}') : Text('Please wait'),
-            ListView.builder(
-            shrinkWrap: true,
-            itemCount: _playerList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
+      child: code != null 
+        ? Expanded(
+          child: playerList(),
+        )
+        : Center(
+          child: CircularProgressIndicator(value: null),
+        )
+    );
+  }
+
+  Widget playerList() {
+    return Column(
+      children: <Widget>[
+        Text('Room code: ${connection.code}', style: TextStyle(fontSize: 20),),
+        Text(
+          'Players',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
+        ListView.builder(
+        shrinkWrap: true,
+        itemCount: _playerList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            width: 150,
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               border: Border.all(width: 0.5, color: Colors.black)
-              ),
-              child: Text('${_playerList[index].name}', textAlign: TextAlign.center,),
-              );
-            },
-          )
-        ],
-      ),
-      )
+            ),
+            child: Text('${_playerList[index].name}', textAlign: TextAlign.center,),
+            );
+          },
+        )
+      ],
     );
   }
 }

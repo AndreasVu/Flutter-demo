@@ -23,6 +23,7 @@ class Connection {
   Function(String) onJoin;
   Function(String) onLeft;
   Function() onGameCreated;
+  Function(List<String>) onJoinedGame;
 
   Connection(this.socket, this.isHost, this.username, {this.code}) {
     assert(code == null && isHost);
@@ -66,6 +67,19 @@ class Connection {
           state = ConnectionState.joiningGame;
         }
         break;
+      case ConnectionState.joiningGame:
+        // TODO: Handle this case.
+        if (json['message'] != 'joined_game') {
+          return;
+        }
+
+        // json['users']
+        if (onJoinedGame != null) {
+          onJoinedGame(json['users']);
+        }
+
+        state = ConnectionState.inLobby;
+        break;
       case ConnectionState.creatingGame:
         if (json['message'] != 'created_game') {
           return;
@@ -91,9 +105,6 @@ class Connection {
         }
 
         // 
-        // TODO: Handle this case.
-        break;
-      case ConnectionState.joiningGame:
         // TODO: Handle this case.
         break;
     }
